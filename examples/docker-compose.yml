@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  # The upstream data source you want to protect.
+  # Replace this with your real service.
+  upstream-api:
+    image: kennethreitz/httpbin
+    ports:
+      - '8000:80'
+
+  # The Mainlayer paywall proxy.
+  # All traffic goes through here; agents without a valid entitlement get 402.
+  paywall:
+    image: ghcr.io/mainlayer/data-paywall:latest
+    ports:
+      - '3000:3000'
+    environment:
+      MAINLAYER_API_KEY: ${MAINLAYER_API_KEY}
+      MAINLAYER_RESOURCE_ID: ${MAINLAYER_RESOURCE_ID}
+      UPSTREAM_URL: http://upstream-api:80
+      PORT: 3000
+      PRICE_USDC: 0.01
+      CHECK_INTERVAL: 60
+    depends_on:
+      - upstream-api
+
+# Usage:
+#
+#   export MAINLAYER_API_KEY=ml_sk_...
+#   export MAINLAYER_RESOURCE_ID=res_abc123
+#   docker compose up
+#
+# Then test the paywall:
+#
+#   # Expect 402 Payment Required:
+#   curl http://localhost:3000/get
+#
+#   # After paying via Mainlayer, include your wallet address:
+#   curl -H "X-Payer-Wallet: wallet_abc123" http://localhost:3000/get
