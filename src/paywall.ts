@@ -20,7 +20,7 @@ interface CacheEntry {
   cachedAt: number;
 }
 
-const MAINLAYER_API_BASE = 'https://api.mainlayer.xyz';
+const MAINLAYER_API_BASE = 'https://api.mainlayer.fr';
 
 export class PaywallService {
   private readonly cache = new Map<string, CacheEntry>();

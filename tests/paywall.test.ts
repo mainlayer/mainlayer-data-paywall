@@ -28,8 +28,8 @@ describe('PaywallService', () => {
       expect(body.error).toBe('payment_required');
       expect(body.resource_id).toBe('res_test123');
       expect(body.price_usdc).toBe(0.01);
-      expect(body.pay_url).toBe('https://api.mainlayer.xyz/pay');
-      expect(body.facilitator_url).toBe('https://api.mainlayer.xyz/facilitator');
+      expect(body.pay_url).toBe('https://api.mainlayer.fr/pay');
+      expect(body.facilitator_url).toBe('https://api.mainlayer.fr/facilitator');
       expect(body.message).toBeTruthy();
     });
   });

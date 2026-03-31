@@ -19,9 +19,9 @@ export function buildProxyApp(options) {
         res.json({
             resource_id: config.resourceId,
             price_usdc: config.priceUsdc,
-            pay_url: 'https://api.mainlayer.xyz/pay',
-            facilitator_url: 'https://api.mainlayer.xyz/facilitator',
-            docs: 'https://docs.mainlayer.xyz',
+            pay_url: 'https://api.mainlayer.fr/pay',
+            facilitator_url: 'https://api.mainlayer.fr/facilitator',
+            docs: 'https://docs.mainlayer.fr',
         });
     });
     if (paywallDisabled) {

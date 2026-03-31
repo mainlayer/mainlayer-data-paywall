@@ -1,4 +1,4 @@
-const MAINLAYER_API_BASE = 'https://api.mainlayer.xyz';
+const MAINLAYER_API_BASE = 'https://api.mainlayer.fr';
 export class PaywallService {
     config;
     cache = new Map();

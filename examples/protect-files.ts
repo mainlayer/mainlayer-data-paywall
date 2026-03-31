@@ -35,7 +35,7 @@ app.get('/', (_req, res) => {
   res.json({
     message: 'File download paywall example',
     protected_path: '/files/*',
-    how_to_pay: 'https://docs.mainlayer.xyz',
+    how_to_pay: 'https://docs.mainlayer.fr',
   });
 });
 

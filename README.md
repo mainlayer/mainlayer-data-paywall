@@ -18,11 +18,11 @@ AI Agent                   Mainlayer Paywall            Your Data Source
     | <-- 402 Payment Required -- |                             |
     |     { pay_url, price }      |                             |
     |                             |                             |
-    |-- Pay via Mainlayer ------> api.mainlayer.xyz             |
+    |-- Pay via Mainlayer ------> api.mainlayer.fr             |
     |                             |                             |
     |-- GET /data/something ----> |                             |
     |   X-Payer-Wallet: wallet_x  |                             |
-    |                             |-- entitlement check ------> api.mainlayer.xyz
+    |                             |-- entitlement check ------> api.mainlayer.fr
     |                             | <-- { granted: true } ----- |
     |                             |-- proxy request ----------> |
     | <-- 200 { data } ---------- | <-- 200 { data } ---------- |
@@ -38,7 +38,7 @@ Protect any API in 2 minutes:
 # 1. Install (or use npx — no install needed)
 npm install -g mainlayer-data-paywall
 
-# 2. Register your resource at app.mainlayer.xyz and get:
+# 2. Register your resource at app.mainlayer.fr and get:
 #    - MAINLAYER_API_KEY
 #    - MAINLAYER_RESOURCE_ID
 
@@ -134,13 +134,13 @@ Returns an array of Express middleware (`[authMiddleware, proxyMiddleware]`).
      "message": "Access to this resource requires payment",
      "resource_id": "res_abc123",
      "price_usdc": 0.01,
-     "pay_url": "https://api.mainlayer.xyz/pay",
-     "facilitator_url": "https://api.mainlayer.xyz/facilitator"
+     "pay_url": "https://api.mainlayer.fr/pay",
+     "facilitator_url": "https://api.mainlayer.fr/facilitator"
    }
    ```
 3. **Agent pays** via `pay_url` using its Mainlayer wallet
 4. **Agent re-sends request** with `X-Payer-Wallet: <wallet_id>` header
-5. **Proxy verifies** entitlement via `api.mainlayer.xyz/entitlements/check`
+5. **Proxy verifies** entitlement via `api.mainlayer.fr/entitlements/check`
 6. **Access granted** — request proxied to upstream, data returned
 
 Entitlement checks are **cached in memory** for `checkInterval` seconds per wallet, so high-frequency agents don't slow down.
@@ -228,14 +228,14 @@ The `facilitator_url` in the 402 body can be used by agent frameworks that suppo
 
 ## Mainlayer Dashboard
 
-Register your data source and manage resources at [app.mainlayer.xyz](https://app.mainlayer.xyz):
+Register your data source and manage resources at [app.mainlayer.fr](https://app.mainlayer.fr):
 
 - Create a resource and set a price
 - Get your `MAINLAYER_API_KEY` and `MAINLAYER_RESOURCE_ID`
 - Monitor payments and entitlements in real time
 - Set up webhooks for payment events
 
-Documentation: [docs.mainlayer.xyz](https://docs.mainlayer.xyz)
+Documentation: [docs.mainlayer.fr](https://docs.mainlayer.fr)
 
 ---
 

@@ -17,7 +17,7 @@ const app = express();
 app.get('/', (_req, res) => {
   res.json({
     message: 'Welcome. Access /api/data for premium data.',
-    how_to_pay: 'https://docs.mainlayer.xyz/quickstart',
+    how_to_pay: 'https://docs.mainlayer.fr/quickstart',
   });
 });
 
@@ -25,7 +25,7 @@ app.get('/', (_req, res) => {
 //
 // The paywall middleware:
 //  1. Reads X-Payer-Wallet from the incoming request
-//  2. Calls api.mainlayer.xyz/entitlements/check
+//  2. Calls api.mainlayer.fr/entitlements/check
 //  3. Returns 402 if not entitled, or proxies through if entitled
 app.use(
   '/api/data',
