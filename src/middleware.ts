@@ -37,9 +37,11 @@ export function createPaywall(options: CreatePaywallOptions): RequestHandler[] {
     next: NextFunction
   ) => {
     const payerWallet = extractPayerWallet(req);
+    const requestId = req.headers['x-request-id'] || `req_${Date.now()}`;
 
     // No wallet header — immediately return payment challenge
     if (!payerWallet) {
+      console.debug(`[mainlayer-paywall] ${requestId} — no wallet provided, returning 402`);
       res.status(402).json(paywallService.buildPaymentRequiredBody());
       return;
     }
@@ -48,24 +50,31 @@ export function createPaywall(options: CreatePaywallOptions): RequestHandler[] {
       const entitlement = await paywallService.checkEntitlement(payerWallet);
 
       if (!entitlement.granted) {
+        console.debug(`[mainlayer-paywall] ${requestId} — ${payerWallet} denied access`);
         res.status(402).json(paywallService.buildPaymentRequiredBody());
         return;
       }
 
       // Access granted — continue to proxy
+      console.debug(`[mainlayer-paywall] ${requestId} — ${payerWallet} access granted, proxying`);
       next();
     } catch (err) {
       if (err instanceof EntitlementCheckError) {
-        // Fail closed: deny access on API errors
-        console.error('[mainlayer-paywall] Entitlement check failed:', err.message);
+        // Fail closed: deny access on API errors (may be transient)
+        console.warn(
+          `[mainlayer-paywall] ${requestId} — entitlement check failed: ${err.message}`,
+          { statusCode: err.statusCode }
+        );
         res.status(503).json({
           error: 'service_unavailable',
           message: 'Unable to verify payment status. Please try again.',
+          request_id: requestId,
         });
         return;
       }
 
-      // Unexpected error
+      // Unexpected error — pass to Express error handler
+      console.error(`[mainlayer-paywall] ${requestId} — unexpected error:`, err);
       next(err);
     }
   };

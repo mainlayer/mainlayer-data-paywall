@@ -95,35 +95,43 @@ export class PaywallService {
           Authorization: `Bearer ${this.config.mainlayerApiKey}`,
           Accept: 'application/json',
         },
+        signal: AbortSignal.timeout(10000), // 10s timeout to prevent hanging
       });
     } catch (err) {
       // Network error — fail closed (deny access) and surface the error
+      const cause = err instanceof Error ? err : new Error(String(err));
       throw new EntitlementCheckError(
-        'Failed to reach Mainlayer API',
-        err instanceof Error ? err : new Error(String(err))
+        `Failed to reach Mainlayer API: ${cause.message}`,
+        cause
       );
     }
 
     if (!response.ok) {
       // 401/403 likely means a bad API key; other errors are transient
-      const body = await response.text().catch(() => '');
+      const body = await response.text().catch(() => '(no response body)');
       throw new EntitlementCheckError(
-        `Mainlayer API returned ${response.status}: ${body}`,
+        `Mainlayer API error (${response.status}): ${body}`,
         null,
         response.status
       );
     }
 
-    const data = (await response.json()) as {
-      granted?: boolean;
-      expires_at?: number;
-      reason?: string;
-    };
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch (err) {
+      throw new EntitlementCheckError(
+        'Mainlayer API response was not valid JSON',
+        err instanceof Error ? err : null
+      );
+    }
 
+    // Safely extract entitlement data with type guards
+    const entitlementData = data as Record<string, unknown>;
     return {
-      granted: Boolean(data.granted),
-      expiresAt: data.expires_at,
-      reason: data.reason,
+      granted: Boolean(entitlementData.granted),
+      expiresAt: typeof entitlementData.expires_at === 'number' ? entitlementData.expires_at : undefined,
+      reason: typeof entitlementData.reason === 'string' ? entitlementData.reason : undefined,
     };
   }
 }
